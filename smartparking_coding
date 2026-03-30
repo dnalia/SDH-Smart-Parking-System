@@ -1,0 +1,54 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Servo.h>
+
+// LCD setup
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Servo setup
+Servo myServo;
+int potPin = A0;  // potentiometer pin
+int potValue;
+
+const int buttonPin = 2;   // pushbutton pin
+const int buzzerPin = 13;  // buzzer pin
+
+void setup() {
+    // Initialize LCD
+    lcd.init();
+    lcd.backlight();
+    lcd.setCursor(0, 0);
+    lcd.print("Hello World!");
+    lcd.setCursor(0, 1);
+    lcd.print("LCD with I2C");
+
+    // Setup servo
+    myServo.attach(9);
+
+    // Setup button & buzzer
+    pinMode(buttonPin, INPUT);
+    pinMode(buzzerPin, OUTPUT);
+}
+
+void loop() {
+    // ----- Button & Buzzer -----
+    int buttonState = digitalRead(buttonPin);
+    if (buttonState == HIGH) {
+        digitalWrite(buzzerPin, HIGH);
+    } else {
+        digitalWrite(buzzerPin, LOW);
+    }
+
+    // ----- Servo & Potentiometer -----
+    potValue = analogRead(potPin);
+    int servoPosition = map(potValue, 0, 1023, 0, 180);
+    myServo.write(servoPosition);
+
+    // ----- LCD Display -----
+    lcd.setCursor(0, 1);
+    lcd.print("Pos: ");
+    lcd.print(servoPosition);
+    lcd.print("   "); // clear extra characters
+
+    delay(15);
+}
